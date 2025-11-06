@@ -1,0 +1,12 @@
+[
+  {
+    "farm_id": "FARM_004",
+    "start_date": "2023-06-30",
+    "end_date": "2023-07-02",
+    "consecutive_days": 3,
+    "avg_moisture": 22.22,
+    "region": "Aberdeenshire",
+    "crop_type": "Rye",
+    "severity": "WARNING"
+  }
+]

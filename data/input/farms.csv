@@ -1,0 +1,21 @@
+farm_id,region,crop_type,area_hectares,owner_name,start_date
+FARM_001,Aberdeenshire,Wheat,91,Tayview Crops,2019-07-26
+FARM_002,Fife,Peas,147,Highland Agri Ltd,2020-03-13
+FARM_003,Highlands,Carrots,111,Highland Agri Ltd,2021-08-06
+FARM_004,Aberdeenshire,Rye,222,Highland Agri Ltd,2021-07-18
+FARM_005,Aberdeenshire,Wheat,81,Smith Family Farms,2019-12-26
+FARM_006,Highlands,Wheat,72,Smith Family Farms,2020-09-14
+FARM_007,Aberdeenshire,Rye,161,Highland Agri Ltd,2020-07-17
+FARM_008,Angus,Wheat,215,Tayview Crops,2021-03-13
+FARM_009,Aberdeenshire,Potatoes,98,Green Valley,2022-09-07
+FARM_010,Aberdeenshire,Oats,201,Highland Agri Ltd,2019-08-01
+FARM_011,Perthshire,Potatoes,266,Green Valley,2020-08-02
+FARM_012,Perthshire,Wheat,95,Northfield Growers,2020-02-19
+FARM_013,Aberdeenshire,Wheat,108,Lochside Produce,2023-12-18
+FARM_014,Highlands,Oats,95,Green Valley,2019-08-26
+FARM_015,Perthshire,Wheat,146,Lochside Produce,2023-08-02
+FARM_016,Fife,Oats,125,Northfield Growers,2021-09-09
+FARM_017,Highlands,Carrots,246,Lochside Produce,2023-06-26
+FARM_018,Perthshire,Rye,134,Tayview Crops,2019-10-01
+FARM_019,Highlands,Carrots,186,Smith Family Farms,2019-09-13
+FARM_020,Highlands,Barley,284,Smith Family Farms,2023-06-29

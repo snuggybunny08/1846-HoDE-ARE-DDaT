@@ -1,0 +1,35 @@
+============================================================
+AGRICULTURAL DATA PLATFORM - PIPELINE EXECUTION SUMMARY
+============================================================
+
+Execution Time: 2025-11-02T08:18:58.569141
+Pipeline Version: 1.0.0
+
+## DATA SOURCES
+  - farms.csv: 20 rows
+  - sensor_readings.csv: 2000 rows
+
+## DATA QUALITY
+  - Duplicates removed (farms): 0
+  - Duplicates removed (sensors): 0
+  - Null values removed: 1
+
+## KEY INSIGHTS
+  - Farms with low moisture alerts: 1
+  - Total alert periods: 1
+  - Critical severity alerts: 0
+  - Warning severity alerts: 1
+  - Most affected region: Aberdeenshire (1 alerts)
+
+  - Average soil moisture across all farms: 42.91%
+  - Average temperature across all farms: 41.64°C
+
+## OUTPUT FILES GENERATED
+  - daily_soil_moisture.csv
+  - daily_temperature.csv
+  - low_moisture_alerts.csv
+  - low_moisture_alerts.json
+  - pipeline_metadata.json
+  - analytics_dashboard.png
+
+============================================================
