@@ -1,2 +1,0 @@
-farm_id,start_date,end_date,consecutive_days,avg_moisture,region,crop_type,severity
-FARM_004,2023-06-30,2023-07-02,3,22.22,Aberdeenshire,Rye,WARNING

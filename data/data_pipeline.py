@@ -3,14 +3,6 @@ Agricultural Data Engineering Pipeline
 Head of Data Engineering Technical Assessment
 Author: Emmanuel
 Date: November 2025
-
-Note on Scalability:
-This implementation uses Pandas for the assessment, but the logic maps 1:1 to Spark:
-- groupBy operations → Spark groupBy
-- window functions → Spark window functions  
-- CSV/Parquet writes → Delta Lake writes
-For millions of farms and billions of readings, this pipeline would run on 
-Databricks/Spark with the same design but cluster-based execution.
 """
 
 import pandas as pd
@@ -52,12 +44,6 @@ class AgricultureDataPipeline:
         self.input_path = Path(input_path)
         self.output_path = Path(output_path)
         self.output_path.mkdir(parents=True, exist_ok=True)
-        
-        # Configurable business rules - in production these would come from 
-        # external config (JSON, environment vars, or governance table)
-        self.moisture_threshold = 30.0  # % threshold for low moisture alerts
-        self.consecutive_days_threshold = 3  # days required for alert generation
-        self.critical_severity_threshold = 20.0  # % threshold for critical alerts
         
         # Metadata tracking
         self.pipeline_metadata = {
@@ -111,9 +97,6 @@ class AgricultureDataPipeline:
         # Fix incomplete sensor_type values
         sensor_df['sensor_type'] = sensor_df['sensor_type'].replace('SoilM', 'SoilMoisture')
         
-        # Ensure reading_value is numeric - important for data quality
-        sensor_df['reading_value'] = pd.to_numeric(sensor_df['reading_value'], errors='coerce')
-        
         # Standardize timestamp format
         # Handle different date formats (DD/MM/YYYY HH:MM) and fix typos
         # First fix obvious typos (like 20023 -> 2023)
@@ -129,7 +112,7 @@ class AgricultureDataPipeline:
         # Handle missing values
         null_before = sensor_df.isnull().sum().sum()
         
-        # Remove rows with null readings or timestamps (critical data)
+        # Remove rows with null readings (critical data)
         sensor_df = sensor_df.dropna(subset=['reading_value', 'reading_ts'])
         
         null_after = sensor_df.isnull().sum().sum()
@@ -201,10 +184,10 @@ class AgricultureDataPipeline:
             if len(farm_data) == 0:
                 continue
                 
-            # Check for consecutive days with low moisture (using configurable threshold)
-            low_moisture = farm_data[farm_data['reading_value_mean'] < self.moisture_threshold].copy()
+            # Check for consecutive days with low moisture
+            low_moisture = farm_data[farm_data['reading_value_mean'] < 30].copy()
             
-            if len(low_moisture) >= self.consecutive_days_threshold:
+            if len(low_moisture) >= 3:
                 # Check for consecutive dates
                 low_moisture['date'] = pd.to_datetime(low_moisture['date'])
                 low_moisture = low_moisture.sort_values('date')
@@ -213,14 +196,14 @@ class AgricultureDataPipeline:
                 low_moisture['date_diff'] = low_moisture['date'].diff().dt.days
                 low_moisture['group'] = (low_moisture['date_diff'] != 1).cumsum()
                 
-                # Find groups with consecutive days >= threshold
+                # Find groups with 3+ consecutive days
                 consecutive_groups = low_moisture.groupby('group').agg({
                     'date': ['min', 'max', 'count'],
                     'reading_value_mean': 'mean'
                 })
                 
                 for idx, row in consecutive_groups.iterrows():
-                    if row[('date', 'count')] >= self.consecutive_days_threshold:
+                    if row[('date', 'count')] >= 3:
                         alerts.append({
                             'farm_id': farm_id,
                             'start_date': row[('date', 'min')],
@@ -229,7 +212,7 @@ class AgricultureDataPipeline:
                             'avg_moisture': round(row[('reading_value_mean', 'mean')], 2),
                             'region': farm_data['region'].iloc[0],
                             'crop_type': farm_data['crop_type'].iloc[0],
-                            'severity': 'CRITICAL' if row[('reading_value_mean', 'mean')] < self.critical_severity_threshold else 'WARNING'
+                            'severity': 'CRITICAL' if row[('reading_value_mean', 'mean')] < 20 else 'WARNING'
                         })
         
         alerts_df = pd.DataFrame(alerts)
@@ -242,7 +225,7 @@ class AgricultureDataPipeline:
         logger.info("Creating visualizations...")
         
         # Set style
-        plt.style.use('seaborn-v0_8-darkgrid')
+        sns.set_style('darkgrid')
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         
         # 1. Soil Moisture Distribution by Region
@@ -292,7 +275,6 @@ class AgricultureDataPipeline:
         
         # Save the figure
         plt.savefig(self.output_path / 'analytics_dashboard.png', dpi=300, bbox_inches='tight')
-        plt.close(fig)  # Close figure to prevent memory accumulation in long-running processes
         logger.info("Visualizations saved to analytics_dashboard.png")
         
     def save_outputs(self, transformed_data: Dict) -> None:
@@ -421,7 +403,7 @@ class AgricultureDataPipeline:
             raise
 
 if __name__ == "__main__":
-    # Initialise and run pipeline
+    # Initialize and run pipeline
     pipeline = AgricultureDataPipeline(
         input_path="data/input",
         output_path="data/output"
